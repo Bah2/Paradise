@@ -6,14 +6,14 @@ public class Enemy : MonoBehaviour
 {
     // Start is called before the first frame update
     public int state = 0; //0 = idle, 1 = Aggressive, 2 = Attack, 3 = Cooldown
-    public float speed, idleSpeed = 1, chaseSpeed=3, idleTurn, turnSpeed=5;
+    public float speed, idleSpeed = 1, chaseSpeed = 3, idleTurn, turnSpeed = 5;
     public float distance, x, y, z, targetX, targetY, targetZ, timer, timeLimit;
-    public float detectRadius=7.5f, attackDist=2; //havainnointi- ja hyökkäysetäisyys
+    public float detectRadius = 7.5f, attackDist = 2; //havainnointi- ja hyökkäysetäisyys
     private float attackTimer, attackTime = 2;
-    private float cooldownSpeed=0.2f; //hitaampi vauhti hyökkäyksen jälkeen
-    bool cooldown=false;
+    private float cooldownSpeed = 0.2f; //hitaampi vauhti hyökkäyksen jälkeen
+    bool cooldown = false;
     bool attack = false;
-       
+
     public Vector3 targetDir; //Kohdepiste Z,Y,Z
     public Quaternion facing; //Rintamasuunta
 
@@ -26,8 +26,8 @@ public class Enemy : MonoBehaviour
     public float closeTime;*/
 
     public GameObject target; //Pelaajan viittaukset
-    PlayerHealth Player;
-    
+    public PlayerHealth Player;
+
     KissanKavely anim; //viittaus omaan animaatioon
 
     void Start()
@@ -35,19 +35,19 @@ public class Enemy : MonoBehaviour
         anim = this.GetComponent<KissanKavely>();
 
         target = GameObject.FindGameObjectWithTag("Player");
-        Player=target.GetComponent<PlayerHealth>();
-               
+        Player = target.GetComponent<PlayerHealth>();
+
         timeLimit = Random.Range(1, 5); //arvotaan kulkuaika
         float startRot = Random.Range(0, 360) - 180;  //arvotaan joku kulkusuunta      
         transform.Rotate(Vector3.up * startRot); //käännetään se sinne
-        
-        
+
+
     }
 
     // Update is called once per frame,
     void Update()
     {
-        
+
         distance = GetDistance(target); //haetaan etäisyys
         
         if (distance > detectRadius) //jos ei havaintosäteen sisällä
@@ -56,10 +56,10 @@ public class Enemy : MonoBehaviour
             Player.safe = false;
 
         if (!cooldown) //jos ei olla hyökätty
-        {            
+        {
             if (distance < detectRadius) //tsekataan etäisyys
             {
-                if (distance > attackDist) 
+                if (distance > attackDist)
                     state = 1; //mikäli se on hyökkäysetäisyyttä isompi, jahdataan
                 else
                     state = 2;
@@ -73,9 +73,9 @@ public class Enemy : MonoBehaviour
             if (attackTimer > attackTime)
                 cooldown = false;
         }
-            
 
-        
+
+
         switch (state)
         {
 
@@ -94,9 +94,9 @@ public class Enemy : MonoBehaviour
             case 1: //jahtaa
                 anim.anim.speed = 5;
                 targetDir = (target.transform.position - transform.position); //lasketaan uusi kohdepiste
-                facing = Quaternion.LookRotation(targetDir); 
-                transform.rotation = Quaternion.Slerp(transform.rotation, facing, turnSpeed*Time.deltaTime); //käännytään sitä kohti
-                speed = chaseSpeed;                
+                facing = Quaternion.LookRotation(targetDir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, facing, turnSpeed * Time.deltaTime); //käännytään sitä kohti
+                speed = chaseSpeed;
                 break;
             case 2: //hyökkää
                 attack = true;
@@ -134,7 +134,7 @@ public class Enemy : MonoBehaviour
             transform.Rotate(Vector3.up * 180); //täyskäännös jos osu
 
         if (collision.gameObject.CompareTag("Player") && attack) //jos on hyökkäämässä ja osuu pelaajaan
-        {            
+        {
             Player.TakeDamage(20); //tehdään damagea, poistutaan hyökkäyksestä ja jäähdytellään
             attack = false;
             cooldown = true;
